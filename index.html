@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Letrópolis: aprende a leer jugando</title>
+<style>
+:root{--bg:#fff4d6;--ink:#2b2350;--card:#ffffff;--a:#ff6b6b;--b:#4ecdc4;--c:#ffb703;--d:#7b5cff;--ok:#2fbf71;--bad:#ef476f}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Trebuchet MS","Comic Sans MS","Segoe UI",system-ui,sans-serif;display:flex;justify-content:center;overflow-x:hidden;
+background-image:radial-gradient(circle at 10% 10%,#ffe08a 0 90px,transparent 91px),radial-gradient(circle at 92% 88%,#b9f0ea 0 120px,transparent 121px)}
+#app{width:100%;max-width:900px;padding:clamp(10px,3vw,28px);display:flex;flex-direction:column;gap:clamp(10px,2vw,20px);min-height:100%}
+h1{margin:0;font-size:clamp(2rem,7vw,3.6rem);text-align:center;letter-spacing:1px;color:var(--d)}
+h1 span{display:inline-block;transform:rotate(-4deg)}
+h1 span:nth-child(odd){color:var(--a)}h1 span:nth-child(3n){color:var(--b)}
+.sub{text-align:center;font-size:clamp(1rem,3vw,1.4rem);margin:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pill{background:var(--card);border-radius:999px;padding:6px 16px;font-weight:bold;font-size:clamp(1rem,3vw,1.4rem);box-shadow:0 3px 0 #0002}
+button{font:inherit;color:inherit;cursor:pointer;border:0}
+button:focus-visible{outline:4px solid var(--d);outline-offset:2px}
+.btn{background:var(--d);color:#fff;border-radius:18px;padding:10px 20px;font-weight:bold;font-size:clamp(1rem,3vw,1.4rem);box-shadow:0 5px 0 #4a34b8}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #4a34b8}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:clamp(10px,2vw,18px)}
+.lv{background:var(--card);border-radius:26px;padding:18px 14px;text-align:center;box-shadow:0 6px 0 #0002;border:5px solid var(--c);transition:transform .15s}
+.lv:nth-child(2){border-color:var(--b)}.lv:nth-child(3){border-color:var(--a)}.lv:nth-child(4){border-color:var(--d)}
+.lv:hover{transform:scale(1.04)}
+.lv .e{font-size:clamp(2.6rem,9vw,4rem);display:block}
+.lv b{display:block;font-size:clamp(1.2rem,3.5vw,1.6rem);margin:4px 0}
+.lv small{display:block;font-size:clamp(.9rem,2.5vw,1.05rem)}
+.st{font-size:1.6rem;letter-spacing:3px;margin-top:6px}
+.game{display:none;flex-direction:column;gap:clamp(10px,2vw,20px);flex:1}
+.bar{height:16px;background:#fff;border-radius:99px;overflow:hidden;box-shadow:inset 0 2px 0 #0002}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--b),var(--ok));transition:width .4s}
+.panel{background:var(--card);border-radius:30px;padding:clamp(14px,3vw,30px);text-align:center;box-shadow:0 6px 0 #0002;display:flex;flex-direction:column;gap:clamp(10px,2vw,18px);align-items:center}
+.ask{font-size:clamp(1.1rem,3.4vw,1.6rem);margin:0}
+.pic{font-size:clamp(4rem,16vw,8rem);line-height:1}
+.word{font-size:clamp(2.2rem,9vw,4.6rem);font-weight:bold;letter-spacing:2px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.blank{display:inline-block;min-width:1.6em;border-bottom:6px dashed var(--a);color:var(--a)}
+.sent{font-size:clamp(1.6rem,6vw,3rem);font-weight:bold;line-height:1.3}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:clamp(10px,2vw,16px);width:100%}
+.opt{background:var(--c);border-radius:22px;padding:clamp(12px,2.5vw,22px) 8px;font-weight:bold;font-size:clamp(1.8rem,6vw,3rem);box-shadow:0 6px 0 #b98200;min-height:70px}
+.opt:nth-child(2){background:var(--b);box-shadow:0 6px 0 #2a9a92}
+.opt:nth-child(3){background:#ff9aa2;box-shadow:0 6px 0 #d66a74}
+.opt:nth-child(4){background:#b9a6ff;box-shadow:0 6px 0 #7f66d6}
+.opt:active{transform:translateY(5px);box-shadow:none}
+.opt.pic2{font-size:clamp(3rem,11vw,5.5rem)}
+.slots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;min-height:80px}
+.slot{min-width:clamp(70px,18vw,120px);height:clamp(64px,14vw,90px);border:5px dashed #bbb;border-radius:18px;font-size:clamp(1.6rem,6vw,3rem);font-weight:bold;background:#fafafa}
+.slot.f{border-style:solid;border-color:var(--d);background:#efeaff}
+.fb{min-height:2.2rem;font-size:clamp(1.3rem,4vw,2rem);font-weight:bold}
+.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.shake{animation:sh .4s}
+@keyframes sh{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.pop{animation:pp .5s}
+@keyframes pp{50%{transform:scale(1.25) rotate(6deg)}}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+#end{display:none;text-align:center}
+#end .big{font-size:clamp(4rem,16vw,7rem)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-height:520px) and (orientation:landscape){.pic{font-size:3.2rem}.panel{gap:6px;padding:10px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="home">
+    <h1 aria-label="Letrópolis"><span>L</span><span>e</span><span>t</span><span>r</span><span>ó</span><span>p</span><span>o</span><span>l</span><span>i</span><span>s</span></h1>
+    <p class="sub">¡Elige un nivel y juega a leer!</p>
+    <div class="top" style="margin:14px 0"><span class="pill">⭐ <span id="tot">0</span></span><button class="btn" id="vozBtn">🔊 Voz: sí</button></div>
+    <div class="levels" id="levels"></div>
+  </div>
+
+  <div class="game" id="game">
+    <div class="top"><button class="btn" id="back">🏠 Inicio</button><span class="pill" id="info"></span><span class="pill">⭐ <span id="sc">0</span></span></div>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="panel" id="panel"></div>
+  </div>
+
+  <div class="panel" id="end">
+    <div class="big" id="endE">🏆</div>
+    <h2 id="endT" style="margin:0;font-size:clamp(1.6rem,6vw,2.6rem)"></h2>
+    <div class="st" id="endS" style="font-size:2.6rem"></div>
+    <div class="row"><button class="btn" id="again">🔁 Jugar otra vez</button><button class="btn" id="menu" style="background:var(--a);box-shadow:0 5px 0 #c74848">🏠 Niveles</button></div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const shuf=a=>[...a].sort(()=>Math.random()-.5);
+// Palabras separadas en sílabas
+const W=[["🏠",["ca","sa"]],["🐱",["ga","to"]],["🐶",["pe","rro"]],["🌙",["lu","na"]],["🦆",["pa","to"]],["✋",["ma","no"]],["⚽",["pe","lo","ta"]],["📖",["li","bro"]],["🍎",["man","za","na"]],["🚗",["ca","rro"]],["🐴",["ca","ba","llo"]],["🍌",["pla","ta","no"]],["🐸",["ra","na"]],["🪑",["si","lla"]],["🎈",["glo","bo"]],["🐷",["cer","do"]],["🦋",["ma","ri","po","sa"]],["🌳",["ár","bol"]],["🐭",["ra","tón"]],["🍪",["ga","lle","ta"]]];
+const SYL=[...new Set(W.flatMap(w=>w[1]))];
+// Oraciones cortas: texto con ___, palabra, dibujo
+const S=[["El ___ dice miau.","gato","🐱"],["El ___ dice guau.","perro","🐶"],["La ___ brilla de noche.","luna","🌙"],["Yo leo un ___.","libro","📖"],["El ___ nada en el agua.","pato","🦆"],["Me como la ___ roja.","manzana","🍎"],["Juego con la ___.","pelota","⚽"],["La ___ salta y croa.","rana","🐸"],["Me siento en la ___.","silla","🪑"],["La ___ vuela entre flores.","mariposa","🦋"],["El ___ sube al cielo.","globo","🎈"],["Mi ___ es bonita.","casa","🏠"],["El ___ corre rápido.","caballo","🐴"],["El ___ come lodo.","cerdo","🐷"]];
+const LV=[
+ {n:"Completa la sílaba",e:"🧩",d:"Falta un pedacito",c:"var(--c)"},
+ {n:"Ordena las sílabas",e:"🔤",d:"Forma la palabra",c:"var(--b)"},
+ {n:"Completa la oración",e:"✏️",d:"Elige la palabra",c:"var(--a)"},
+ {n:"Lee y elige",e:"👀",d:"Busca el dibujo",c:"var(--d)"}];
+const N=8;
+let save={}, voz=true, st={};
+try{save=JSON.parse(localStorage.getItem("letropolis")||"{}")}catch(e){}
+const persist=()=>{try{localStorage.setItem("letropolis",JSON.stringify(save))}catch(e){}};
+
+// Sonido y voz
+let ac;
+function tono(f,t=.15,d=0){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f;o.type="triangle";g.gain.setValueAtTime(.2,ac.currentTime+d);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d+t);o.connect(g);g.connect(ac.destination);o.start(ac.currentTime+d);o.stop(ac.currentTime+d+t)}catch(e){}}
+const sonOk=()=>{tono(523);tono(659,.15,.12);tono(784,.25,.24)};
+const sonNo=()=>{tono(220,.25)};
+function di(t){if(!voz||!window.speechSynthesis)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/___/g,"…"));u.lang="es-MX";u.rate=.8;u.pitch=1.1;speechSynthesis.speak(u)}catch(e){}}
+
+function menu(){
+  $("#game").style.display="none";$("#end").style.display="none";$("#home").style.display="block";
+  $("#levels").innerHTML=LV.map((l,i)=>`<button class="lv" data-i="${i}" style="border-color:${l.c}"><span class="e">${l.e}</span><b>Nivel ${i+1}</b><small>${l.n}</small><small>${l.d}</small><div class="st">${"⭐".repeat(save[i]||0)+"☆".repeat(3-(save[i]||0))}</div></button>`).join("");
+  $("#tot").textContent=Object.values(save).reduce((a,b)=>a+b,0);
+  document.querySelectorAll(".lv").forEach(b=>b.onclick=()=>start(+b.dataset.i));
+}
+function start(i){
+  st={lv:i,q:0,sc:0,ok1:true};
+  if(i<2)st.items=shuf(W).slice(0,N);else st.items=shuf(S).slice(0,N);
+  $("#home").style.display="none";$("#end").style.display="none";$("#game").style.display="flex";
+  $("#sc").textContent=0;next();
+}
+function next(){
+  if(st.q>=N)return fin();
+  st.ok1=true;st.done=false;
+  $("#info").textContent=`Nivel ${st.lv+1} · ${st.q+1}/${N}`;
+  $("#prog").style.width=(st.q/N*100)+"%";
+  [q1,q2,q3,q4][st.lv](st.items[st.q]);
+}
+const speak=t=>`<button class="btn" onclick="di('${t}')">🔊 Escuchar</button>`;
+function panel(h){$("#panel").innerHTML=h}
+function good(txt,say){
+  if(st.done)return;st.done=true;
+  const f=$("#fb");f.className="fb ok pop";f.textContent="🎉 ¡Muy bien!";sonOk();di(say||txt);
+  if(st.ok1){st.sc++;$("#sc").textContent=st.sc}
+  st.q++;setTimeout(next,1800);
+}
+function bad(el){
+  st.ok1=false;sonNo();if(el){el.classList.remove("shake");void el.offsetWidth;el.classList.add("shake")}
+  const f=$("#fb");f.className="fb no";f.textContent="Casi… ¡inténtalo otra vez!";
+}
+// Nivel 1: sílaba faltante
+function q1([e,s]){
+  const k=Math.floor(Math.random()*s.length),ans=s[k],full=s.join("");
+  const opts=shuf([ans,...shuf(SYL.filter(x=>x!==ans)).slice(0,2)]);
+  panel(`<p class="ask">¿Qué sílaba falta?</p><div class="pic">${e}</div>
+  <div class="word">${s.map((x,i)=>i==k?'<span class="blank" id="bl">&nbsp;</span>':x).join("")}</div>
+  ${speak(full)}<div class="opts">${opts.map(o=>`<button class="opt">${o}</button>`).join("")}</div><div class="fb" id="fb"></div>`);
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    if(st.done)return;
+    if(b.textContent===ans){$("#bl").textContent=ans;$("#bl").style.color="var(--ok)";$("#bl").style.borderColor="var(--ok)";good(full)}else bad(b)});
+  setTimeout(()=>di(full),300);
+}
+// Nivel 2: ordenar sílabas
+function q2([e,s]){
+  const full=s.join(""),pool=shuf(s.map((x,i)=>({x,i})));
+  let put=[];
+  panel(`<p class="ask">Toca las sílabas en orden</p><div class="pic">${e}</div>
+  <div class="slots" id="sl"></div>${speak(full)}<div class="opts" id="pl"></div><div class="fb" id="fb"></div>`);
+  const draw=()=>{
+    $("#sl").innerHTML=s.map((_,i)=>`<button class="slot ${put[i]?'f':''}" data-i="${i}">${put[i]?put[i].x:""}</button>`).join("");
+    $("#pl").innerHTML=pool.map(p=>put.includes(p)?`<span></span>`:`<button class="opt" data-k="${p.i}-${p.x}">${p.x}</button>`).join("");
+    document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(st.done)return;put.push(pool.find(p=>p.i+"-"+p.x===b.dataset.k));tono(600,.08);draw();check()});
+    document.querySelectorAll(".slot").forEach(b=>b.onclick=()=>{if(st.done)return;put.splice(+b.dataset.i);draw()});
+  };
+  const check=()=>{
+    if(put.length<s.length)return;
+    if(put.map(p=>p.x).join("")===full)good(full);
+    else{bad($("#sl"));setTimeout(()=>{put=[];draw()},700)}
+  };
+  draw();setTimeout(()=>di(full),300);
+}
+// Nivel 3: completar oración
+function q3([t,a,e]){
+  const opts=shuf([a,...shuf(S.map(x=>x[1]).filter(x=>x!==a)).slice(0,2)]);
+  const full=t.replace("___",a);
+  panel(`<p class="ask">Elige la palabra que falta</p><div class="pic">${e}</div>
+  <div class="sent">${t.replace("___",'<span class="blank" id="bl">&nbsp;&nbsp;&nbsp;&nbsp;</span>')}</div>${speak(full)}
+  <div class="opts">${opts.map(o=>`<button class="opt" style="font-size:clamp(1.4rem,5vw,2.4rem)">${o}</button>`).join("")}</div><div class="fb" id="fb"></div>`);
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    if(st.done)return;
+    if(b.textContent===a){$("#bl").textContent=a;$("#bl").style.color="var(--ok)";$("#bl").style.borderColor="var(--ok)";good(full)}else bad(b)});
+  setTimeout(()=>di(full),300);
+}
+// Nivel 4: leer y elegir el dibujo
+function q4([t,a,e]){
+  const full=t.replace("___",a);
+  const opts=shuf([e,...shuf(S.map(x=>x[2]).filter(x=>x!==e)).slice(0,2)]);
+  panel(`<p class="ask">Lee la oración y elige el dibujo</p><div class="sent">${full}</div>${speak(full)}
+  <div class="opts">${opts.map(o=>`<button class="opt pic2">${o}</button>`).join("")}</div><div class="fb" id="fb"></div>`);
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(st.done)return;b.textContent===e?good(full):bad(b)});
+  setTimeout(()=>di(full),300);
+}
+function fin(){
+  $("#game").style.display="none";$("#end").style.display="flex";
+  const s=st.sc,stars=s>=7?3:s>=5?2:1;
+  if(stars>(save[st.lv]||0)){save[st.lv]=stars;persist()}
+  $("#endE").textContent=stars==3?"🏆":stars==2?"🌟":"👏";
+  $("#endT").textContent=`${s} de ${N} a la primera. ${stars==3?"¡Eres un lector genial!":stars==2?"¡Muy buen trabajo!":"¡Sigue practicando!"}`;
+  $("#endS").textContent="⭐".repeat(stars)+"☆".repeat(3-stars);
+  sonOk();di("¡Terminaste el nivel!");
+}
+$("#again").onclick=()=>start(st.lv);
+$("#menu").onclick=menu;$("#back").onclick=()=>{if(window.speechSynthesis)speechSynthesis.cancel();menu()};
+$("#vozBtn").onclick=e=>{voz=!voz;e.target.textContent="🔊 Voz: "+(voz?"sí":"no")};
+menu();
+</script>
+</body>
+</html>
